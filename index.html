@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="max-age=3600" />
+  <title>CoWork Hub - จอง Co-Working Space</title>
+
+  <!-- Bootstrap + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" integrity="sha384-mkF8kK0dXj4pA4LY2gEo6ABbVJ9+MfPn9bF4w3Z3Z8kP1j6wP4Z8kP4Z8kP4Z8kP" crossorigin="anonymous">
+
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+  <!-- Flatpickr Calendar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+  <!-- Stripe -->
+  <script src="https://js.stripe.com/v3/" async></script>
+
+  <!-- Custom Styles (minified for speed) -->
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a6fd8;
+      --success: #48bb78;
+      --dark: #1a202c;
+      --light: #f8fafc;
+    }
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f7fa; }
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&h=900&fit=crop') center/cover no-repeat;
+      color: white; padding: 150px 0; text-align: center;
+    }
+    .hero h1 { font-size: 3rem; font-weight: bold; }
+    .feature-card {
+      border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 16px; padding: 20px; text-align: center;
+      transition: transform 0.3s ease; background: white;
+    }
+    .feature-card:hover { transform: translateY(-8px); }
+    .form-control {
+      border-radius: 12px; border: 2px solid #e2e8f0; padding-left: 40px;
+      background-position: left 12px center; background-repeat: no-repeat; background-size: 20px;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 0.25rem rgba(102,126,234,.25); }
+    #name { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'/%3E%3Cpath fill-rule='evenodd' d='M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.5h14V4a1 1 0 0 0-1-1H2zm13 2H1v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6z'/%3E%3C/svg%3E"); }
+    #email { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.5h12V4a1 1 0 0 0-1-1H2zm13 2H1v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6z'/%3E%3C/svg%3E"); }
+    #date { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='%23999' viewBox='0 0 16 16'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E"); }
+    #time { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='%23999' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='8'/%3E%3Cpolyline points='8 4 8 8 12 10'/%3E%3C/svg%3E"); }
+    .btn-primary {
+      background: linear-gradient(45deg, var(--primary), var(--primary-dark)); border: none; border-radius: 25px;
+      padding: 12px 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(102,126,234,0.3); transition: all 0.3s ease;
+    }
+    .btn-primary:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+    .btn-success { background: linear-gradient(45deg, #48bb78, #38a169); border: none; border-radius: 25px; padding: 12px 30px; font-weight: bold; }
+    .btn-success:hover { transform: scale(1.05); }
+    .btn-google { background: #4285f4; color: white; border-radius: 25px; padding: 12px 30px; font-weight: bold; }
+    .btn-google:hover { background: #3367d6; }
+    .user-info { color: var(--primary); font-weight: bold; }
+    footer { background: var(--dark); color: #a0aec0; padding: 20px 0; text-align: center; font-size: 14px; }
+    .table th { background: #f8fafc; }
+    .loading { display: none; text-align: center; padding: 20px; }
+  </style>
+</head>
+<body data-aos-easing="ease" data-aos-duration="1000">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">CoWork Hub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#home">หน้าแรก</a></li>
+          <li class="nav-item"><a class="nav-link" href="#features">คุณสมบัติ</a></li>
+          <li class="nav-item"><a class="nav-link" href="#booking">จองเลย</a></li>
+          <li class="nav-item" id="adminNav" style="display: none;"><a class="nav-link" href="#admin">แดชบอร์ดแอดมิน</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">ติดต่อ</a></li>
+          <li class="nav-item" id="userNav" style="display: none;">
+            <span class="navbar-text user-info me-2" id="userDisplay"></span>
+            <button class="btn btn-outline-danger btn-sm" id="logoutBtn">ออก</button>
+          </li>
+          <li class="nav-item" id="loginNav">
+            <button class="btn btn-primary btn-sm" id="googleSignIn">เข้าสู่ระบบ</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section id="home" class="hero" data-aos="fade-down">
+    <div class="container">
+      <h1 data-aos="zoom-in" data-aos-delay="200">จอง Co-Working Space ที่ดีที่สุด</h1>
+      <p data-aos="fade-up" data-aos-delay="400">พื้นที่ทำงานทันสมัย สะดวกสบาย ราคายุติธรรม</p>
+      <a href="#booking" class="btn btn-primary" data-aos="fade-up" data-aos-delay="600">จองตอนนี้</a>
+    </div>
+  </section>
+
+  <!-- Login Prompt -->
+  <section id="auth" class="py-5 bg-white" style="display: none;">
+    <div class="container text-center" data-aos="fade-up">
+      <h2>เข้าสู่ระบบเพื่อจอง</h2>
+      <p class="text-muted">ใช้ Google เพื่อความรวดเร็วและปลอดภัย</p>
+      <button class="btn btn-google" id="googleSignInPrompt">
+        เข้าสู่ระบบด้วย Google
+      </button>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5" data-aos="fade-up">ทำไมต้องเลือกเรา?</h2>
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-card">
+            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&h=200&fit=crop" alt="WiFi" class="img-fluid rounded mb-3" loading="lazy">
+            <h4>WiFi ความเร็วสูง</h4>
+            <p>เชื่อมต่อแรง ไม่สะดุด</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-card">
+            <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=200&fit=crop" alt="Meeting" class="img-fluid rounded mb-3" loading="lazy">
+            <h4>ห้องประชุมทันสมัย</h4>
+            <p>อุปกรณ์ครบครัน</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-card">
+            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=200&fit=crop" alt="Coffee" class="img-fluid rounded mb-3" loading="lazy">
+            <h4>กาแฟฟรี</h4>
+            <p>เติมพลังได้ตลอดวัน</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Booking Form -->
+  <section id="booking" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-5" data-aos="fade-up">จองพื้นที่ของคุณ</h2>
+      <form id="bookingForm" class="row g-3">
+        <div id="loginPrompt" class="col-12 text-center mb-3" style="display: none;">
+          <div class="alert alert-warning">กรุณาเข้าสู่ระบบก่อนจอง!</div>
+        </div>
+        <div class="col-md-6" data-aos="fade-right">
+          <label class="form-label">ชื่อ-นามสกุล</label>
+          <input type="text" class="form-control" id="name" required />
+        </div>
+        <div class="col-md-6" data-aos="fade-left">
+          <label class="form-label">อีเมล</label>
+          <input type="email" class="form-control" id="email" required />
+        </div>
+        <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
+          <label class="form-label">วันที่จอง</label>
+          <input type="text" class="form-control" id="date" placeholder="เลือกวันที่" required />
+        </div>
+        <div class="col-md-6" data-aos="fade-left" data-aos-delay="100">
+          <label class="form-label">เวลา</label>
+          <input type="text" class="form-control" id="time" placeholder="เช่น 09:00 - 17:00" required />
+        </div>
+        <div class="col-12" data-aos="fade-up" data-aos-delay="200">
+          <label class="form-label">ประเภทพื้นที่</label>
+          <select class="form-select" id="spaceType" required>
+            <option value="">เลือก...</option>
+            <option value="desk">โต๊ะเดี่ยว (300 บาท)</option>
+            <option value="room">ห้องส่วนตัว (500 บาท)</option>
+            <option value="meeting">ห้องประชุม (800 บาท)</option>
+          </select>
+        </div>
+        <div class="col-12 text-center" data-aos="fade-up" data-aos-delay="300">
+          <button type="button" id="submitBooking" class="btn btn-primary me-3">ยืนยันข้อมูล</button>
+          <button type="button" id="payNow" class="btn btn-success" style="display: none;">ชำระเงินทันที</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Admin Dashboard -->
+  <section id="admin" class="py-5" style="display: none;">
+    <div class="container">
+      <h2 class="text-center mb-5">แดชบอร์ดแอดมิน</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <h4>ผู้ใช้ทั้งหมด</h4>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead><tr><th>ชื่อ</th><th>อีเมล</th><th>บทบาท</th></tr></thead>
+              <tbody id="usersTable"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h4>การจองทั้งหมด</h4>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead><tr><th>ชื่อ</th><th>วันที่</th><th>เวลา</th><th>ประเภท</th><th>การกระทำ</th></tr></thead>
+              <tbody id="bookingsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="container">
+      <p>&copy; 2025 CoWork Hub. All rights reserved. | ติดต่อ: info@coworkhub.com | โทร: 012-345-6789</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" async></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "your-project.firebaseapp.com",
+      projectId: "your-project-id",
+      storageBucket: "your-project.appspot.com",
+      messagingSenderId: "123456789",
+      appId: "1:123456789:web:abcdef123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const functions = getFunctions(app);
+    const provider = new GoogleAuthProvider();
+
+    AOS.init();
+    flatpickr('#date', { dateFormat: 'Y-m-d', minDate: 'today', altInput: true, altFormat: 'j M Y' });
+    flatpickr('#time', { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true });
+
+    const stripe = Stripe('pk_test_YOUR_STRIPE_KEY');
+
+    // Auth State
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        document.getElementById('loginNav').style.display = 'none';
+        document.getElementById('userNav').style.display = 'block';
+        document.getElementById('userDisplay').textContent = `ยินดีต้อนรับ, ${user.displayName}`;
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('loginPrompt').style.display = 'none';
+
+        await setDoc(doc(db, 'users', user.uid), {
+          name: user.displayName, email: user.email, uid: user.uid,
+          role: (await getDoc(doc(db, 'users', user.uid))).data()?.role || 'user'
+        }, { merge: true });
+
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.data().role === 'admin') {
+          document.getElementById('adminNav').style.display = 'block';
+          document.getElementById('admin').style.display = 'block';
+          loadAdminDashboard();
+        }
+      } else {
+        document.getElementById('loginNav').style.display = 'block';
+        document.getElementById('userNav').style.display = 'none';
+        document.getElementById('auth').style.display = 'block';
+        document.getElementById('loginPrompt').style.display = 'block';
+        document.getElementById('adminNav').style.display = 'none';
+        document.getElementById('admin').style.display = 'none';
+      }
+    });
+
+    document.getElementById('googleSignIn').onclick = () => signInWithPopup(auth, provider);
+    document.getElementById('googleSignInPrompt').onclick = () => document.getElementById('googleSignIn').click();
+    document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+    document.getElementById('submitBooking').onclick = () => {
+      if (!auth.currentUser) return alert('กรุณาเข้าสู่ระบบ');
+      const form = document.getElementById('bookingForm');
+      if (form.checkValidity()) {
+        document.getElementById('submitBooking').style.display = 'none';
+        document.getElementById('payNow').style.display = 'inline-block';
+      } else alert('กรุณากรอกข้อมูลให้ครบ');
+    };
+
+    document.getElementById('payNow').onclick = async () => {
+      const user = auth.currentUser;
+      const formData = {
+        name: document.getElementById('name').value || user.displayName,
+        email: document.getElementById('email').value || user.email,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        spaceType: document.getElementById('spaceType').value,
+        uid: user.uid
+      };
+
+      await addDoc(collection(db, 'bookings'), formData);
+      const sendEmail = httpsCallable(functions, 'sendBookingEmail');
+      try {
+        const result = await sendEmail(formData);
+        alert(`จองสำเร็จ! ใบเสร็จเลขที่ ${result.data.bookingId} ส่งไปที่ ${formData.email} แล้ว`);
+      } catch (e) {
+        alert('จองสำเร็จ แต่ส่งอีเมลไม่สำเร็จ');
+      }
+
+      document.getElementById('bookingForm').reset();
+      document.getElementById('payNow').style.display = 'none';
+      document.getElementById('submitBooking').style.display = 'inline-block';
+    };
+
+    async function loadAdminDashboard() {
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const usersTable = document.getElementById('usersTable');
+      usersTable.innerHTML = '';
+      usersSnap.forEach(doc => {
+        const d = doc.data();
+        usersTable.innerHTML += `<tr><td>${d.name}</td><td>${d.email}</td><td>${d.role}</td></tr>`;
+      });
+
+      const bookingsSnap = await getDocs(collection(db, 'bookings'));
+      const bookingsTable = document.getElementById('bookingsTable');
+      bookingsTable.innerHTML = '';
+      bookingsSnap.forEach(docSnap => {
+        const d = docSnap.data();
+        bookingsTable.innerHTML += `
+          <tr>
+            <td>${d.name}</td><td>${d.date}</td><td>${d.time}</td><td>${d.spaceType}</td>
+            <td><button class="btn btn-danger btn-sm deleteBooking" data-id="${docSnap.id}">ลบ</button></td>
+          </tr>`;
+      });
+
+      document.querySelectorAll('.deleteBooking').forEach(btn => {
+        btn.onclick = async () => {
+          await deleteDoc(doc(db, 'bookings', btn.dataset.id));
+          loadAdminDashboard();
+        };
+      });
+    }
+  </script>
+</body>
+</html>

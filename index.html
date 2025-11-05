@@ -105,7 +105,7 @@
   <section id="auth" class="py-5 bg-white" style="display: none;">
     <div class="container text-center" data-aos="fade-up">
       <h2>เข้าสู่ระบบเพื่อจอง</h2>
-      <p class="text-muted">ใช้ Google เพื่อความรวดเร็วและปลอดภัย</p>
+      <p class="text-muted">SSH Google account</p>
       <button class="btn btn-google" id="googleSignInPrompt">
         Login Google
       </button>
@@ -171,7 +171,7 @@
           <select class="form-select" id="spaceType" required>
             <option value="">เลือก...</option>
             <option value="desk">โต๊ะเดี่ยว (300 บาท)</option>
-            <option value="room">ห้องส่วนตัว (500 บาท)</option>
+            <option value="room">private room (500 บาท)</option>
             <option value="meeting">ห้องประชุม (800 บาท)</option>
           </select>
         </div>
@@ -186,10 +186,10 @@
   <!-- Admin Dashboard -->
   <section id="admin" class="py-5" style="display: none;">
     <div class="container">
-      <h2 class="text-center mb-5">แดชบอร์ดแอดมิน</h2>
+      <h2 class="text-center mb-5">admin Dashboard</h2>
       <div class="row">
         <div class="col-md-6">
-          <h4>ผู้ใช้ทั้งหมด</h4>
+          <h4>user interface successfully /h4>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead><tr><th>ชื่อ</th><th>อีเมล</th><th>บทบาท</th></tr></thead>
@@ -201,7 +201,7 @@
           <h4>การจองทั้งหมด</h4>
           <div class="table-responsive">
             <table class="table table-striped">
-              <thead><tr><th>ชื่อ</th><th>วันที่</th><th>เวลา</th><th>ประเภท</th><th>การกระทำ</th></tr></thead>
+              <thead><tr><th>name</th><th>Date</th><th>เวลา</th><th>ประเภท</th><th>การกระทำ</th></tr></thead>
               <tbody id="bookingsTable"></tbody>
             </table>
           </div>
@@ -236,6 +236,7 @@
   storageBucket: "cowork-hub.appspot.com",
   messagingSenderId: "123456789",
   appId: "1:123456789:web:abcdef1234567890abcdef"
+      appId: ""<text : file>
 };
 
     const app = initializeApp(firebaseConfig);
